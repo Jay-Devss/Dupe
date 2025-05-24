@@ -1,140 +1,131 @@
-local player = game.Players.LocalPlayer
-local backpack = player:WaitForChild("Backpack")
-local character = player.Character or player.CharacterAdded:Wait()
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Backpack = LocalPlayer:WaitForChild("Backpack")
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 
-local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+-- GUI Setup
+local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+screenGui.Name = "JayDupeGui"
 screenGui.ResetOnSpawn = false
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 250)
-frame.Position = UDim2.new(0.5, -150, 0.5, -125)
-frame.AnchorPoint = Vector2.new(0.5, 0.5)
-frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 250, 0, 200)
+frame.Position = UDim2.new(0, 20, 0, 20)
+frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 frame.BorderSizePixel = 0
+frame.BackgroundTransparency = 0.1
+frame.Name = "MainFrame"
 frame.Active = true
 frame.Draggable = true
-frame.Parent = screenGui
 
 local uiCorner = Instance.new("UICorner", frame)
-uiCorner.CornerRadius = UDim.new(0, 12)
+uiCorner.CornerRadius = UDim.new(0, 10)
 
+-- Title Label
 local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, -40, 0, 40)
-title.Position = UDim2.new(0, 10, 0, 0)
-title.BackgroundTransparency = 1
+title.Size = UDim2.new(1, -40, 0, 25)
+title.Position = UDim2.new(0, 10, 0, 5)
 title.Text = "Jay Dupe Script"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 20
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 18
 title.TextXAlignment = Enum.TextXAlignment.Left
 
-local closeButton = Instance.new("TextButton", frame)
-closeButton.Size = UDim2.new(0, 40, 0, 40)
-closeButton.Position = UDim2.new(1, -40, 0, 0)
-closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-closeButton.Text = "X"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.Font = Enum.Font.GothamBold
-closeButton.TextSize = 20
-closeButton.AutoButtonColor = true
-local closeCorner = Instance.new("UICorner", closeButton)
-closeCorner.CornerRadius = UDim.new(1, 0)
+-- Close Button
+local closeBtn = Instance.new("TextButton", frame)
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -30, 0, 5)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.new(1, 1, 1)
+closeBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(1, 0)
 
-closeButton.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
+closeBtn.MouseButton1Click:Connect(function()
+	screenGui:Destroy()
 end)
 
-local layout = Instance.new("UIListLayout", frame)
-layout.Padding = UDim.new(0, 10)
-layout.FillDirection = Enum.FillDirection.Vertical
-layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-layout.VerticalAlignment = Enum.VerticalAlignment.Center
-layout.SortOrder = Enum.SortOrder.LayoutOrder
-
-local function createButton(text, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.9, 0, 0, 50)
-    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.Gotham
-    btn.TextSize = 20
-    btn.Text = text
-    btn.AutoButtonColor = true
-    btn.Parent = frame
-    local corner = Instance.new("UICorner", btn)
-    corner.CornerRadius = UDim.new(0, 12)
-    btn.MouseButton1Click:Connect(callback)
+-- Function to create styled buttons
+local function createButton(name, yPos, callback)
+	local button = Instance.new("TextButton", frame)
+	button.Size = UDim2.new(0.9, 0, 0, 35)
+	button.Position = UDim2.new(0.05, 0, 0, yPos)
+	button.Text = name
+	button.TextColor3 = Color3.new(1, 1, 1)
+	button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+	button.Font = Enum.Font.SourceSans
+	button.TextSize = 16
+	Instance.new("UICorner", button).CornerRadius = UDim.new(0, 8)
+	button.MouseButton1Click:Connect(callback)
 end
 
-createButton("Dupe Pet", function()
-    local tool = character:FindFirstChildOfClass("Tool")
-    if tool and tool.Name:find("Age") then
-        tool.Parent = backpack
-        wait()
-        local base = tool.Name:gsub("%[Age %d+%]", "")
-        local randomAge = math.random(1, 5)
-        local clone = tool:Clone()
-        clone.Name = base .. "[Age " .. randomAge .. "]"
-        clone.Parent = backpack
-    end
+-- Duplication Logic
+createButton("Dupe Pet", 40, function()
+	local tool = Character:FindFirstChildOfClass("Tool")
+	if tool then
+		tool.Parent = Backpack
+		wait()
+		local newTool = tool:Clone()
+		local newAge = math.random(1, 5)
+		newTool.Name = newTool.Name:gsub("Age %d+", "Age " .. newAge)
+		newTool.Parent = Backpack
+	end
 end)
 
-createButton("Dupe Seed", function()
-    local tool = character:FindFirstChildOfClass("Tool")
-    if tool and tool.Name:find("Seed") then
-        tool.Parent = backpack
-        wait()
-        local current = tonumber(tool.Name:match("%[X(%d+)%]")) or 1
-        local base = tool.Name:gsub(" %[X%d+%]", "")
-        local newName = base .. " [X" .. (current + 1) .. "]"
-        tool.Name = newName
-    end
+createButton("Dupe Seed", 85, function()
+	local tool = Character:FindFirstChildOfClass("Tool")
+	if tool and tool.Name:find("Seed") then
+		tool.Parent = Backpack
+		wait()
+
+		local baseName, count = tool.Name:match("^(.-)%s%[X(%d+)%]$")
+		if baseName and count then
+			local newCount = tonumber(count) + 1
+			tool.Name = baseName .. " [X" .. newCount .. "]"
+		else
+			tool.Name = tool.Name .. " [X2]"
+		end
+	end
 end)
 
-createButton("Dupe Fruit", function()
-    local tool = character:FindFirstChildOfClass("Tool")
-    if tool and tool.Name:find("KG") then
-        tool.Parent = backpack
-        wait()
-        local clone = tool:Clone()
-        clone.Parent = backpack
-    end
+createButton("Dupe Fruit", 130, function()
+	local tool = Character:FindFirstChildOfClass("Tool")
+	if tool then
+		tool.Parent = Backpack
+		wait()
+		local newTool = tool:Clone()
+		newTool.Parent = Backpack
+	end
 end)
 
+-- Resize Handle
 local resizeHandle = Instance.new("Frame", frame)
 resizeHandle.Size = UDim2.new(0, 20, 0, 20)
 resizeHandle.Position = UDim2.new(1, -20, 1, -20)
-resizeHandle.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-resizeHandle.ZIndex = 10
+resizeHandle.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+resizeHandle.BorderSizePixel = 0
 resizeHandle.Active = true
+resizeHandle.Draggable = false
 
-local resizeCorner = Instance.new("UICorner", resizeHandle)
-resizeCorner.CornerRadius = UDim.new(1, 0)
-
-local dragging = false
-local lastPos
+local resizing = false
 
 resizeHandle.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        lastPos = input.Position
-    end
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		resizing = true
+	end
 end)
 
 resizeHandle.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		resizing = false
+	end
 end)
 
 resizeHandle.InputChanged:Connect(function(input)
-    if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
-        local delta = input.Position - lastPos
-        frame.Size = UDim2.new(0, math.max(200, frame.Size.X.Offset + delta.X), 0, math.max(150, frame.Size.Y.Offset + delta.Y))
-        lastPos = input.Position
-    end
-end)
-
-frame:GetPropertyChangedSignal("Size"):Connect(function()
-    resizeHandle.Position = UDim2.new(1, -20, 1, -20)
+	if resizing and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local mouse = game:GetService("UserInputService"):GetMouseLocation()
+		local newWidth = math.clamp(mouse.X - frame.AbsolutePosition.X, 150, 600)
+		local newHeight = math.clamp(mouse.Y - frame.AbsolutePosition.Y, 100, 400)
+		frame.Size = UDim2.new(0, newWidth, 0, newHeight)
+	end
 end)
