@@ -214,7 +214,7 @@ startBtn.MouseButton1Click:Connect(function()
                 ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("PetGiftingService"):FireServer("GivePet", foundTarget)
                 wait(1)
                 tool.Parent = backpack
-                wait(0.2)
+                wait(0.5)
             end
         end
     end
